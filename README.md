@@ -1,4 +1,4 @@
-# thesis
+
 # How to run each test scenario?
   1. Go to feature file containing test scenario need to run.
   2. Right-click on this feature file and click Run
