@@ -1,3 +1,6 @@
+# Run project
+  1. Install IntelliJ, Maven, JDK
+  2. Clone this git repository
 
 # How to run each test scenario?
   1. Go to feature file containing test scenario need to run.
