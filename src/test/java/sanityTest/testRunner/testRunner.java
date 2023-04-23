@@ -3,11 +3,12 @@ package sanityTest.testRunner;
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.WebDriver;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-        features = {"sanityTest/featureFiles/viewProduct.feature"},
-        glue = "stepDefinitions",
+        features = "src/test/java/sanityTest/featureFiles/viewProduct.feature",
+        glue = "sanityTest/stepDefinitions",
         plugin = {"pretty",
                 "html:reports/myreport.html",
                 "json:reports/myreport.json",

@@ -8,7 +8,7 @@ Feature: Login
   Scenario: [Positive] User login successfully with valid credentials
     When Users enter valid userName and password
     And Users click login button
-    Then Users are in their homepage
+    Then Users are in their previous page
 
   @negative
   Scenario: [Negative] User login unsuccessfully without registered username

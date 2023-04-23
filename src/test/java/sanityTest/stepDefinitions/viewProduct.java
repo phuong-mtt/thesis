@@ -14,6 +14,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
 
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 public class viewProduct{
     WebDriver driver;
@@ -30,15 +31,15 @@ public class viewProduct{
         driver.quit();
     }
 
-    @Given("Users are in homepage")
-    public void user_in_homepage() {
+    @Given("Users search for product")
+    public void users_search_product() {
+        //homepage
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.get("https://cellphones.com.vn");
-    }
+        driver.manage().timeouts().implicitlyWait(3000, TimeUnit.MILLISECONDS);
 
-    @When("Users search for product")
-    public void users_search_product() {
+        //search
         WebElement searchBox = driver.findElement(By.xpath("//input[@id='inp$earch']"));
         searchBox.sendKeys("apple");
         searchBox.sendKeys(Keys.ENTER);
@@ -48,6 +49,7 @@ public class viewProduct{
     public void users_click_product() {
         WebElement product = driver.findElement(By.xpath("//img[@alt='Tai nghe Apple EarPods Lightning (MMTN2) Chính hãng Apple Việt Nam']"));
         product.click();
+        driver.manage().timeouts().implicitlyWait(3000, TimeUnit.MILLISECONDS);
     }
 
     @Then("User should see the detailed information of product")

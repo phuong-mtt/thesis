@@ -17,16 +17,16 @@ public class login{
     WebDriver driver;
     ResourceBundle rb; //read properties file
     String br;
-//    @Before
-//    public void setup() {
-//        rb = ResourceBundle.getBundle("userConfig");
-//        br=rb.getString("browser");
-//    }
-//
-//    @After
-//    public void tearDown(){
-//        driver.quit();
-//    }
+    @Before
+    public void setup() {
+        rb = ResourceBundle.getBundle("userConfig");
+        br=rb.getString("browser");
+    }
+
+    @After
+    public void tearDown(){
+        driver.quit();
+    }
 
     @Given("Users are in login page")
     public void users_are_in_login_page() {
@@ -49,7 +49,7 @@ public class login{
         loginBtn.click();
     }
 
-    @Then("Users are in their homepage")
+    @Then("Users are in their previous page")
     public void users_are_in_homepage(){
         //check in homepage
         WebElement welcomeBox = driver.findElement(By.xpath("//p[@class='welcome-smember__2nd-contentDesktop']"));
