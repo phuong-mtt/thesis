@@ -56,8 +56,6 @@ public class login{
         Assert.assertTrue(welcomeBox.isDisplayed());
 
     }
-
-
     @When("Users enter invalid userName")
     public void users_enter_invalid_user_name() {
         String userName = "abc";
