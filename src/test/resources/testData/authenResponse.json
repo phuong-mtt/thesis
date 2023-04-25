@@ -1,0 +1,20 @@
+{
+  "id": 1,
+  "email": "Beaulah.OHara86@yahoo.com",
+  "firstName": "Ebba",
+  "lastName": "Hirthe",
+  "tel": "0159354373",
+  "address": {
+    "province": 75,
+    "district": 738,
+    "ward": 26317,
+    "provinceName": "Tỉnh Đồng Nai",
+    "districtName": "Huyện Thống Nhất",
+    "wardName": "Xã Hưng Lộc",
+    "detail": null
+  },
+  "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/206.jpg",
+  "role": 2,
+  "birthday": "2023-01-20T00:00:00.000Z",
+  "createdAt": "2023-04-24T17:27:27.705Z"
+}

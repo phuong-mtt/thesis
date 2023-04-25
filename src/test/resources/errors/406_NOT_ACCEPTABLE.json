@@ -1,0 +1,4 @@
+{
+  "status": 406,
+  "error": " This service doesn't support the format requested in the Accept header ."
+}
