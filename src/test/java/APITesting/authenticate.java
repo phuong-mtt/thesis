@@ -189,5 +189,6 @@ public class authenticate {
         //Assert
         Assert.assertThat(authenticateResponse.statusCode(), is(SC_UNSUPPORTED_MEDIA_TYPE));
         Assert.assertEquals(expectedResult, authenticateResponse.asString());
+        Assert.assertEquals("","");
     }
 }
