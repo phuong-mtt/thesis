@@ -1,7 +1,16 @@
-# Run project
-  1. Install IntelliJ, Maven, JDK
+### Run project
+  1. Install IntelliJ, Maven 3.9.1, JDK 20
   2. Clone this git repository
-
+  
+###TDD
+# How to run testcase?
+  1. Go to src/test/java/APITesting/{{ts_name}
+  2. Click Run button before each method Test
+  3. IDE automatically run test case
+# How to see test report?
+  1. After running successfully, Allure reports will be generated.
+  2. To see report, go to ExtentReports/ExtendReport.html/Open in/Browser/Chrome
+###BDD
 # How to run each test scenario?
   1. Go to feature file containing test scenario need to run.
   2. Right-click on this feature file and click Run
