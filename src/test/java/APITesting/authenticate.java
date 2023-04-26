@@ -5,12 +5,10 @@ import controllers.dataLoad.AuthenticationController;
 import io.restassured.RestAssured;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
+import listeners.reportListener;
 import lombok.SneakyThrows;
 import org.junit.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.HashMap;
 
@@ -20,9 +18,10 @@ import static org.apache.http.HttpStatus.*;
 import static controllers.utils.JsonParser.*;
 import static org.hamcrest.Matchers.*;
 
+@Listeners(reportListener.class)
 public class authenticate {
     private final AuthenticationController authenticationController = new AuthenticationController();
-    /*
+    /**
      * SUCCESSFULLY
      * */
     @Test(description= "Case verify authenticating users successfully when entering valid credentials")
@@ -49,7 +48,7 @@ public class authenticate {
         //Assert
     }
 
-    /*
+    /**
     * UNSUCCESSFULLY
     * */
     @DataProvider(name = "requiredFieldBlank")
@@ -189,6 +188,5 @@ public class authenticate {
         //Assert
         Assert.assertThat(authenticateResponse.statusCode(), is(SC_UNSUPPORTED_MEDIA_TYPE));
         Assert.assertEquals(expectedResult, authenticateResponse.asString());
-        Assert.assertEquals("","");
     }
 }
