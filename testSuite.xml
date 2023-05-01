@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE suite>
 
-<suite name = "testSuite" thread-count = "3" parallel = "tests">
-    <test>
-
+<suite name = "testSuite">
+    <test name = "API Testing">
+        <classes>
+            <class name = "APITesting.authenticate"/>
+        </classes>
     </test>
 </suite>
