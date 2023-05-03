@@ -7,7 +7,10 @@ import io.restassured.http.Method;
 import io.restassured.response.Response;
 import listeners.reportListener;
 import lombok.SneakyThrows;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.testng.annotations.*;
 
 import java.util.HashMap;
@@ -111,7 +114,8 @@ public class authenticate {
 
         //Assert
         Assert.assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
-        Assert.assertEquals(expectedResult, authenticateResponse.asString());
+//        Assert.assertEquals(expectedResult, authenticateResponse.asString());
+        JSONAssert.assertEquals(expectedResult, authenticateResponse.asString(), JSONCompareMode.STRICT);
     }
 
     @Test(description= "Case verify authenticating users unsuccessfully when entering invalid password")
