@@ -1,0 +1,9 @@
+{
+  "errors": [
+    {
+      "msg": "password is required",
+      "param": "password",
+      "location": "body"
+    }
+  ]
+}

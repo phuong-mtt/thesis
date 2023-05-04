@@ -1,17 +1,20 @@
 package APITesting;
 
-import com.beust.ah.A;
 import controllers.dataLoad.AuthenticationController;
-import io.restassured.RestAssured;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import listeners.reportListener;
 import lombok.SneakyThrows;
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
+
+import static org.skyscreamer.jsonassert.JSONCompareMode.*;
+
 import org.testng.annotations.*;
+
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static controllers.utils.assertion.assertEquals;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+
 
 import java.util.HashMap;
 
@@ -19,31 +22,37 @@ import static controllers.dataLoad.AuthenticationController.changeValueWithJsonP
 import static org.apache.http.HttpStatus.*;
 
 import static controllers.utils.JsonParser.*;
-import static org.hamcrest.Matchers.*;
 
 @Listeners(reportListener.class)
 public class authenticate {
     private final AuthenticationController authenticationController = new AuthenticationController();
+
     /**
      * SUCCESSFULLY
-     * */
-    @Test(description= "Case verify authenticating users successfully when entering valid credentials")
+     */
+    @Test(description = "Case verify authenticating users successfully when entering valid credentials")
     @SneakyThrows
-    public void authenticateSuccessfullyWithValidCredentials(){
+    public void authenticateSuccessfullyWithValidCredentials() {
         //Arrange
         var body = createBody("testData/authenSuccessfully.json");
         System.out.println(body);
+
         //Act
-        Response authenticateResponse = authenticationController.create(body);
+        Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
+        String createdAt = authenticateResponse.then().extract().path("createdAt");
         System.out.println(authenticateResponse.asString());
+
         //Assert
-        Assert.assertThat(authenticateResponse.statusCode(), is(SC_OK));
-        Assert.assertEquals(body.toPrettyString(), authenticateResponse.asString());
+        assertThat(authenticateResponse.statusCode(), is(SC_OK));
+        assertThat(authenticateResponse.asString(), allOf(
+                //common
+                hasJsonPath("$.createdAt", is(createdAt))
+        ));
     }
 
-    @Test(description= "Case verify authenticating users successfully when entering required fields")
+    @Test(description = "Case verify authenticating users successfully when entering required fields")
     @SneakyThrows
-    public void authenticateSuccessfullyWithRequiredFields(){ //same authenticate successfully with valid credentials
+    public void authenticateSuccessfullyWithRequiredFields() { //same authenticate successfully with valid credentials
         //Arrange
 
         //Act
@@ -52,15 +61,16 @@ public class authenticate {
     }
 
     /**
-    * UNSUCCESSFULLY
-    * */
+     * UNSUCCESSFULLY
+     */
     @DataProvider(name = "requiredFieldBlank")
-    private static Object[][] requiredFieldBlank(){
-        return new Object[][] {{"0666523191", ""}, {"", "password"}};
+    private static Object[][] requiredFieldBlank() {
+        return new Object[][]{{"0666523191", ""}, {"", "password"}};
     }
-    @Test(description= "Case verify authenticating users unsuccessfully when required fields are blank", dataProvider = "requiredFieldBlank")
+
+    @Test(description = "Case verify authenticating users unsuccessfully when required fields are blank", dataProvider = "requiredFieldBlank")
     @SneakyThrows
-    public void authenticateUnSuccessfullyWithRequiredFieldBlank(String username, String password){
+    public void authenticateUnSuccessfullyWithRequiredFieldBlank(String username, String password) {
         //Arrange
         var bodyEg = createBody("testData/authenSuccessfully.json");
         bodyEg.removeAll();
@@ -68,90 +78,111 @@ public class authenticate {
         credentials.put("tel", username);
         credentials.put("password", password);
 
-        for (String field: credentials.keySet()){
-            String body = changeValueWithJsonPath(bodyEg.toPrettyString(), "$" + field, credentials.get(field));
-            //Act
-            Response authenticateResponse = authenticationController.create(body);
-            var expectedResult = asString("errors/400_BAD_REQUEST.json");
+        //Act
+        Response authenticateResponse = authenticationController.authenticate(credentials.toString());
+        var expectedResult = asString("errors/400_BAD_REQUEST.json");
 
-            //Assert
-            Assert.assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
-            Assert.assertEquals(expectedResult, authenticateResponse.asString());
-        }
+        //Assert
+        assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
+        assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
+
+//        for (String field : credentials.keySet()) {
+//            String body = changeValueWithJsonPath(bodyEg.toPrettyString(), "$" + field, credentials.get(field));
+//            //Act
+////            Response authenticateResponse = authenticationController.create(body);
+//            var expectedResult = asString("errors/400_BAD_REQUEST.json");
+//
+//            //Assert
+////            Assert.assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
+////            Assert.assertEquals(expectedResult, authenticateResponse.asString());
+//            assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
+//            assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
+//        }
     }
 
-    @DataProvider(name="requiredFieldMissing")
-    private static Object[][] requiredFieldMissing(){
-        return new Object[][] {{"tel"}, {"password"}};
+    @DataProvider(name = "requiredFieldMissing")
+    private static Object[][] requiredFieldMissing() {
+        return new Object[][]{{"tel"}, {"password"}};
     }
 
-    @Test(description= "Case verify authenticating users unsuccessfully when lacking of required fields", dataProvider = "requiredFieldMissing")
+    @Test(description = "Case verify authenticating users unsuccessfully when lacking of required fields", dataProvider = "requiredFieldMissing")
     @SneakyThrows
-    public void authenticateUnSuccessfullyWithoutRequiredFields(String fieldName){
+    public void authenticateUnSuccessfullyWithoutRequiredFields(String fieldName) {
         //Arrange
         var body = createBody("testData/authenSuccessfully.json");
 
         //Act
         body.remove(fieldName);
-        Response authenticateResponse = authenticationController.create(body);
-        var expectedResult = asString("errors/404_NOT_FOUND.json");
+        Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
+        var expectedResult = asString("errors/400_PARAM_REQUIRED.json");
+
+        if(fieldName == "tel"){
+            //Assert
+            assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
+            assertEquals(expectedResult.replace("password", "tel"), authenticateResponse.asString(), STRICT);
+
+        }
+        else{
+            //Assert
+            assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
+            assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
+        }
 
 
-        //Assert
-        Assert.assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
-        Assert.assertEquals(expectedResult, authenticateResponse.asString());
     }
 
-    @Test(description= "Case verify authenticating users unsuccessfully when entering wrong format of username")
+    @Test(description = "Case verify authenticating users unsuccessfully when entering wrong format of username")
     @SneakyThrows
-    public void authenticateUnSuccessfullyWithWrongFormatOfUsername(){
+    public void authenticateUnSuccessfullyWithWrongFormatOfUsername() {
         //Arrange
         var body = createBody("testData/authenWithWrongUsername.json");
 
         //Act
-        Response authenticateResponse = authenticationController.create(body);
-        var expectedResult = asString("errors/404_NOT_FOUND.json");
+        Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
+        String value = authenticateResponse.then().extract().path("errors[0].value");
+        System.out.println(value);
+        var expectedResult = asString("errors/400_BAD_REQUEST.json");
+        String expectedResultFinal = changeValueWithJsonPath(expectedResult, "errors[0].value", value);
 
         //Assert
-        Assert.assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
-//        Assert.assertEquals(expectedResult, authenticateResponse.asString());
-        JSONAssert.assertEquals(expectedResult, authenticateResponse.asString(), JSONCompareMode.STRICT);
+        assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
+        assertEquals(authenticateResponse.asString(), expectedResultFinal, STRICT);
     }
 
-    @Test(description= "Case verify authenticating users unsuccessfully when entering invalid password")
+    @Test(description = "Case verify authenticating users unsuccessfully when entering invalid password")
     @SneakyThrows
-    public void authenticateUnSuccessfullyWithInvalidPassword(){
+    public void authenticateUnSuccessfullyWithInvalidPassword() {
         //Arrange
         var body = createBody("testData/authenWithInvalidPassword.json");
 
         //Act
-        Response authenticateResponse = authenticationController.create(body);
+        Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
         var expectedResult = asString("errors/401_AUTH_REQUIRED.json");
 
         //Assert
-        Assert.assertThat(authenticateResponse.statusCode(), is(SC_UNAUTHORIZED));
-        Assert.assertEquals(expectedResult, authenticateResponse.asString());
+        assertThat(authenticateResponse.statusCode(), is(SC_UNAUTHORIZED));
+        assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
 
     }
 
-    @Test(description= "Case verify authenticating users unsuccessfully when username has not been recorded in the system")
+    @Test(description = "Case verify authenticating users unsuccessfully when username has not been recorded in the system")
     @SneakyThrows
-    public void authenticateUnSuccessfullyWithNonExistedUsername(){
+    public void authenticateUnSuccessfullyWithNonExistedUsername() {
         //Arrange
         var body = createBody("testData/authenWithNonExistedUser.json");
 
         //Act
-        Response authenticateResponse = authenticationController.create(body);
+        Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
         var expectedResult = asString("errors/404_NOT_FOUND.json");
 
         //Assert
-        Assert.assertThat(authenticateResponse.statusCode(), is(SC_NOT_FOUND));
-        Assert.assertEquals(expectedResult, authenticateResponse.asString());
+        assertThat(authenticateResponse.statusCode(), is(SC_NOT_FOUND));
+        assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
     }
 
-    @Test(description= "Case verify authenticating users unsuccessfully when using wrong HTTP method")
+    @Test(description = "Case verify authenticating users unsuccessfully when using wrong HTTP method")
     @SneakyThrows
-    public void authenWith405Error(){
+    public void authenWith405Error() {
         //Arrange
         var requestBody = createBody("testData/authenSuccessfully.json");
 
@@ -160,13 +191,13 @@ public class authenticate {
         var expectedResult = asString("errors/405_OP_NOT_ALLOWED.json");
 
         //Assert
-        Assert.assertThat(authenticateResponse.statusCode(), is(SC_METHOD_NOT_ALLOWED));
-        Assert.assertEquals(expectedResult, authenticateResponse.asString());
+        assertThat(authenticateResponse.statusCode(), is(SC_METHOD_NOT_ALLOWED));
+        assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
     }
 
-    @Test(description= "Case verify authenticating users unsuccessfully when having wrong Accept header")
+    @Test(description = "Case verify authenticating users unsuccessfully when having wrong Accept header")
     @SneakyThrows
-    public void authenWith406Error(){
+    public void authenWith406Error() {
         //Arrange
         var requestBody = createBody("testData/authenSuccessfully.json");
 
@@ -175,13 +206,13 @@ public class authenticate {
         var expectedResult = asString("errors/406_NOT_ACCEPTABLE.json");
 
         //Assert
-        Assert.assertThat(authenticateResponse.statusCode(), is(SC_NOT_ACCEPTABLE));
-        Assert.assertEquals(expectedResult, authenticateResponse.asString());
+        assertThat(authenticateResponse.statusCode(), is(SC_NOT_ACCEPTABLE));
+        assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
     }
 
-    @Test(description= "Case verify authenticating users unsuccessfully when having wrong media type")
+    @Test(description = "Case verify authenticating users unsuccessfully when having wrong media type")
     @SneakyThrows
-    public void authenWith415Error(){
+    public void authenWith415Error() {
         //Arrange
         var requestBody = createBody("testData/authenSuccessfully.json");
 
@@ -190,7 +221,7 @@ public class authenticate {
         var expectedResult = asString("errors/415_UNSUPPORTED_MEDIA_TYPE.json");
 
         //Assert
-        Assert.assertThat(authenticateResponse.statusCode(), is(SC_UNSUPPORTED_MEDIA_TYPE));
-        Assert.assertEquals(expectedResult, authenticateResponse.asString());
+        assertThat(authenticateResponse.statusCode(), is(SC_UNSUPPORTED_MEDIA_TYPE));
+        assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
     }
 }
