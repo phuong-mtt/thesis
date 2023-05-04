@@ -142,11 +142,10 @@ public class authenticate {
         String value = authenticateResponse.then().extract().path("errors[0].value");
         System.out.println(value);
         var expectedResult = asString("errors/400_BAD_REQUEST.json");
-        System.out.print(authenticateResponse.asString());
+        String expectedResultFinal = changeValueWithJsonPath(expectedResult, "errors[0].value", value);
 
         //Assert
         assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
-        String expectedResultFinal = changeValueWithJsonPath(expectedResult, "errors[0].value", value);
         assertEquals(authenticateResponse.asString(), expectedResultFinal, STRICT);
     }
 
