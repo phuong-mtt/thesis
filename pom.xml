@@ -27,6 +27,16 @@
             <version>2.8.0</version>
         </dependency>
 
+        <!--        JSONPATH ASSERT-->
+        <!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path-assert -->
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path-assert</artifactId>
+            <version>2.8.0</version>
+            <scope>test</scope>
+        </dependency>
+
+
         <!--        RESTASSURED-->
         <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
         <dependency>
@@ -157,7 +167,19 @@
             <scope>test</scope>
         </dependency>
 
-
+        <!--        HAMCREST-->
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <version>2.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>1.5.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
