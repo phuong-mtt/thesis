@@ -1,5 +1,6 @@
 package APITesting;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.dataLoad.AuthenticationController;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
@@ -35,12 +36,10 @@ public class authenticate {
     public void authenticateSuccessfullyWithValidCredentials() {
         //Arrange
         var body = createBody("testData/authenSuccessfully.json");
-        System.out.println(body);
 
         //Act
         Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
         String createdAt = authenticateResponse.then().extract().path("createdAt");
-        System.out.println(authenticateResponse.asString());
 
         //Assert
         assertThat(authenticateResponse.statusCode(), is(SC_OK));
@@ -65,7 +64,7 @@ public class authenticate {
      */
     @DataProvider(name = "requiredFieldBlank")
     private static Object[][] requiredFieldBlank() {
-        return new Object[][]{{"0666523191", ""}, {"", "password"}};
+        return new Object[][]{{"0018107349", ""}, {"", "password"}};
     }
 
     @Test(description = "Case verify authenticating users unsuccessfully when required fields are blank", dataProvider = "requiredFieldBlank")
@@ -78,26 +77,24 @@ public class authenticate {
         credentials.put("tel", username);
         credentials.put("password", password);
 
+        String authen = new ObjectMapper().writeValueAsString(credentials);
+
         //Act
-        Response authenticateResponse = authenticationController.authenticate(credentials.toString());
+        Response authenticateResponse = authenticationController.authenticate(authen);
         var expectedResult = asString("errors/400_BAD_REQUEST.json");
 
-        //Assert
-        assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
-        assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
-
-//        for (String field : credentials.keySet()) {
-//            String body = changeValueWithJsonPath(bodyEg.toPrettyString(), "$" + field, credentials.get(field));
-//            //Act
-////            Response authenticateResponse = authenticationController.create(body);
-//            var expectedResult = asString("errors/400_BAD_REQUEST.json");
-//
-//            //Assert
-////            Assert.assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
-////            Assert.assertEquals(expectedResult, authenticateResponse.asString());
-//            assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
-//            assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
-//        }
+        for(String key: credentials.keySet()){
+            if(key == "tel" && credentials.get(key) == ""){
+                //Assert
+                assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
+                assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
+            }
+            else if (key == "password" && credentials.get(key) == ""){
+                //Assert
+                assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
+                assertEquals(expectedResult.replace("tel", "password"), authenticateResponse.asString(),  STRICT);
+            }
+        }
     }
 
     @DataProvider(name = "requiredFieldMissing")
@@ -120,15 +117,12 @@ public class authenticate {
             //Assert
             assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
             assertEquals(expectedResult.replace("password", "tel"), authenticateResponse.asString(), STRICT);
-
         }
         else{
             //Assert
             assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
             assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
         }
-
-
     }
 
     @Test(description = "Case verify authenticating users unsuccessfully when entering wrong format of username")
@@ -140,13 +134,12 @@ public class authenticate {
         //Act
         Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
         String value = authenticateResponse.then().extract().path("errors[0].value");
-        System.out.println(value);
         var expectedResult = asString("errors/400_BAD_REQUEST.json");
         String expectedResultFinal = changeValueWithJsonPath(expectedResult, "errors[0].value", value);
 
         //Assert
         assertThat(authenticateResponse.statusCode(), is(SC_BAD_REQUEST));
-        assertEquals(authenticateResponse.asString(), expectedResultFinal, STRICT);
+        assertEquals(expectedResultFinal.replace("required", "invalid"), authenticateResponse.asString(),  STRICT);
     }
 
     @Test(description = "Case verify authenticating users unsuccessfully when entering invalid password")
@@ -217,7 +210,7 @@ public class authenticate {
         var requestBody = createBody("testData/authenSuccessfully.json");
 
         //Act
-        var authenticateResponse = authenticationController.check415(Method.POST, requestBody.toPrettyString());
+        var authenticateResponse = authenticationController.check415(Method.POST, requestBody.asText());
         var expectedResult = asString("errors/415_UNSUPPORTED_MEDIA_TYPE.json");
 
         //Assert

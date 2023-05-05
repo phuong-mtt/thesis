@@ -6,24 +6,9 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.JsonPath;
 import io.restassured.response.Response;
 import controllers.utils.constants;
-import lombok.SneakyThrows;
-import io.restassured.RestAssured;
-import io.restassured.config.RedirectConfig;
-import io.restassured.config.RestAssuredConfig;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.http.ContentType;
 import io.restassured.http.Method;
-import io.restassured.response.Response;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpHeaders;
-import org.openqa.selenium.json.Json;
 
 public class AuthenticationController extends BaseController {
-    @SneakyThrows
-//    public AuthenticationController() {
-//    }
-
     protected String getBaseURL() {
         return constants.BASE_URL + constants.AUTH_URL;
     }

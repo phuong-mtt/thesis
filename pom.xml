@@ -36,7 +36,6 @@
             <scope>test</scope>
         </dependency>
 
-
         <!--        RESTASSURED-->
         <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
         <dependency>
