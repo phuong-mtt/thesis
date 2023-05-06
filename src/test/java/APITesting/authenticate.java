@@ -35,7 +35,7 @@ public class authenticate {
     @SneakyThrows
     public void authenticateSuccessfullyWithValidCredentials() {
         //Arrange
-        var body = createBody("testData/authenSuccessfully.json");
+        var body = createBody("testData/authenticate/authenSuccessfully.json");
 
         //Act
         Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
@@ -71,7 +71,7 @@ public class authenticate {
     @SneakyThrows
     public void authenticateUnSuccessfullyWithRequiredFieldBlank(String username, String password) {
         //Arrange
-        var bodyEg = createBody("testData/authenSuccessfully.json");
+        var bodyEg = createBody("testData/authenticate/authenSuccessfully.json");
         bodyEg.removeAll();
         HashMap<String, String> credentials = new HashMap<>();
         credentials.put("tel", username);
@@ -81,7 +81,7 @@ public class authenticate {
 
         //Act
         Response authenticateResponse = authenticationController.authenticate(authen);
-        var expectedResult = asString("errors/400_BAD_REQUEST.json");
+        var expectedResult = asString("errors/authenticate/400_BAD_REQUEST.json");
 
         for(String key: credentials.keySet()){
             if(key == "tel" && credentials.get(key) == ""){
@@ -106,12 +106,12 @@ public class authenticate {
     @SneakyThrows
     public void authenticateUnSuccessfullyWithoutRequiredFields(String fieldName) {
         //Arrange
-        var body = createBody("testData/authenSuccessfully.json");
+        var body = createBody("testData/authenticate/authenSuccessfully.json");
 
         //Act
         body.remove(fieldName);
         Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
-        var expectedResult = asString("errors/400_PARAM_REQUIRED.json");
+        var expectedResult = asString("errors/authenticate/400_PARAM_REQUIRED.json");
 
         if(fieldName == "tel"){
             //Assert
@@ -129,12 +129,12 @@ public class authenticate {
     @SneakyThrows
     public void authenticateUnSuccessfullyWithWrongFormatOfUsername() {
         //Arrange
-        var body = createBody("testData/authenWithWrongUsername.json");
+        var body = createBody("testData/authenticate/authenWithWrongUsername.json");
 
         //Act
         Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
         String value = authenticateResponse.then().extract().path("errors[0].value");
-        var expectedResult = asString("errors/400_BAD_REQUEST.json");
+        var expectedResult = asString("errors/authenticate/400_BAD_REQUEST.json");
         String expectedResultFinal = changeValueWithJsonPath(expectedResult, "errors[0].value", value);
 
         //Assert
@@ -146,11 +146,11 @@ public class authenticate {
     @SneakyThrows
     public void authenticateUnSuccessfullyWithInvalidPassword() {
         //Arrange
-        var body = createBody("testData/authenWithInvalidPassword.json");
+        var body = createBody("testData/authenticate/authenWithInvalidPassword.json");
 
         //Act
         Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
-        var expectedResult = asString("errors/401_AUTH_REQUIRED.json");
+        var expectedResult = asString("errors/authenticate/401_AUTH_REQUIRED.json");
 
         //Assert
         assertThat(authenticateResponse.statusCode(), is(SC_UNAUTHORIZED));
@@ -162,11 +162,11 @@ public class authenticate {
     @SneakyThrows
     public void authenticateUnSuccessfullyWithNonExistedUsername() {
         //Arrange
-        var body = createBody("testData/authenWithNonExistedUser.json");
+        var body = createBody("testData/authenticate/authenWithNonExistedUser.json");
 
         //Act
         Response authenticateResponse = authenticationController.authenticate(body.toPrettyString());
-        var expectedResult = asString("errors/404_NOT_FOUND.json");
+        var expectedResult = asString("errors/authenticate/404_NOT_FOUND.json");
 
         //Assert
         assertThat(authenticateResponse.statusCode(), is(SC_NOT_FOUND));
@@ -177,11 +177,11 @@ public class authenticate {
     @SneakyThrows
     public void authenWith405Error() {
         //Arrange
-        var requestBody = createBody("testData/authenSuccessfully.json");
+        var requestBody = createBody("testData/authenticate/authenSuccessfully.json");
 
         //Act
         var authenticateResponse = authenticationController.check405(requestBody.toPrettyString(), Method.PUT);
-        var expectedResult = asString("errors/405_OP_NOT_ALLOWED.json");
+        var expectedResult = asString("errors/authenticate/405_OP_NOT_ALLOWED.json");
 
         //Assert
         assertThat(authenticateResponse.statusCode(), is(SC_METHOD_NOT_ALLOWED));
@@ -192,11 +192,11 @@ public class authenticate {
     @SneakyThrows
     public void authenWith406Error() {
         //Arrange
-        var requestBody = createBody("testData/authenSuccessfully.json");
+        var requestBody = createBody("testData/authenticate/authenSuccessfully.json");
 
         //Act
         var authenticateResponse = authenticationController.check406(requestBody.toPrettyString(), Method.POST);
-        var expectedResult = asString("errors/406_NOT_ACCEPTABLE.json");
+        var expectedResult = asString("errors/authenticate/406_NOT_ACCEPTABLE.json");
 
         //Assert
         assertThat(authenticateResponse.statusCode(), is(SC_NOT_ACCEPTABLE));
@@ -207,11 +207,11 @@ public class authenticate {
     @SneakyThrows
     public void authenWith415Error() {
         //Arrange
-        var requestBody = createBody("testData/authenSuccessfully.json");
+        var requestBody = createBody("testData/authenticate/authenSuccessfully.json");
 
         //Act
         var authenticateResponse = authenticationController.check415(Method.POST, requestBody.asText());
-        var expectedResult = asString("errors/415_UNSUPPORTED_MEDIA_TYPE.json");
+        var expectedResult = asString("errors/authenticate/415_UNSUPPORTED_MEDIA_TYPE.json");
 
         //Assert
         assertThat(authenticateResponse.statusCode(), is(SC_UNSUPPORTED_MEDIA_TYPE));
