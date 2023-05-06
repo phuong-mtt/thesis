@@ -86,30 +86,36 @@ public abstract class BaseController<T> {
     }
 
     public Response patch (String resourceId, String bodyPath){
-        BaseController var10000 = this.withDefaultHeaders().withBody(bodyPath).withMethod(Method.GET);
+        BaseController var10000 = this.withDefaultHeaders().withBody(bodyPath).withMethod(Method.PATCH);
         String var10001 = this.getBaseURL();
         Response response = var10000.withUrl(var10001 + resourceId).doRequest();
         return response;
     }
 
     public Response patch (String resourceId, ObjectNode body){
-        BaseController var10000 = this.withDefaultHeaders().withBody(body).withMethod(Method.GET);
+        BaseController var10000 = this.withDefaultHeaders().withBody(body).withMethod(Method.PATCH);
         String var10001 = this.getBaseURL();
         Response response = var10000.withUrl(var10001 + resourceId).doRequest();
         return response;
     }
 
     public Response put (String resourceId, String bodyPath){
-        BaseController var10000 = this.withDefaultHeaders().withBody(bodyPath).withMethod(Method.GET);
+        BaseController var10000 = this.withDefaultHeaders().withBody(bodyPath).withMethod(Method.PUT);
         String var10001 = this.getBaseURL();
         Response response = var10000.withUrl(var10001 + resourceId).doRequest();
         return response;
     }
 
     public Response put (String resourceId, ObjectNode body){
-        BaseController var10000 = this.withDefaultHeaders().withBody(body).withMethod(Method.GET);
+        BaseController var10000 = this.withDefaultHeaders().withBody(body).withMethod(Method.PUT);
         String var10001 = this.getBaseURL();
         Response response = var10000.withUrl(var10001 + resourceId).doRequest();
+        return response;
+    }
+
+    public Response delete (String resourceId){
+        BaseController var10000 = this.withDefaultHeaders().withMethod(Method.DELETE);
+        Response response = var10000.withUrl(this.getBaseURL() + resourceId).doRequest();
         return response;
     }
 
