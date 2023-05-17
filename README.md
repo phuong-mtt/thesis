@@ -1,3 +1,8 @@
+# Documents
+  1. Folder of documents: https://drive.google.com/drive/folders/1hstoqWlTvAHZTqccA8HLGpBb9sYI8V0l?usp=sharing
+  2. Authentication Users API Design: https://docs.google.com/document/d/1mijDWDyYk8PpGn3DbDMEE80K5a_nGTlj/edit?usp=sharing&ouid=101716044135938983401&rtpof=true&sd=true
+  3. Test cases for Authentication Service: https://docs.google.com/spreadsheets/d/193gTcSL_CZCPHl7-yBPrWOi5ELWJIgzb/edit?usp=share_link&ouid=101716044135938983401&rtpof=true&sd=true
+  
 # Run project
   1. Install IntelliJ, Maven 3.9.1, JDK 20
   2. Clone this git repository
