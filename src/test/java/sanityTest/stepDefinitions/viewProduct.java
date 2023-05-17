@@ -54,7 +54,7 @@ public class viewProduct{
 
     @Then("User should see the detailed information of product")
     public void user_see_detail() {
-        WebElement detail = driver.findElement(By.xpath("//div[@class='box-detail-product__box-left column is-one-third']"));
+        WebElement detail = driver.findElement(By.xpath("//div[@class='box-gallery']"));
         Assert.assertTrue(detail.isDisplayed());
     }
 }
