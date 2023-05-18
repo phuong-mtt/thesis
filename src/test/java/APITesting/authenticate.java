@@ -2,6 +2,7 @@ package APITesting;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.dataLoad.AuthenticationController;
+import controllers.utils.reRunFailedCases;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import listeners.reportListener;
@@ -9,6 +10,7 @@ import lombok.SneakyThrows;
 
 import static org.skyscreamer.jsonassert.JSONCompareMode.*;
 
+import org.testng.Assert;
 import org.testng.annotations.*;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
@@ -217,4 +219,13 @@ public class authenticate {
         assertThat(authenticateResponse.statusCode(), is(SC_UNSUPPORTED_MEDIA_TYPE));
         assertEquals(authenticateResponse.asString(), expectedResult, STRICT);
     }
+//
+//    /**
+//     * Re-run failed cases
+//     */
+//    @SneakyThrows
+//    @Test(description = "Re-run failed cases", retryAnalyzer = reRunFailedCases.class)
+//    public void reRunFailed(){
+//        Assert.fail();
+//    }
 }
